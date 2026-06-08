@@ -6,9 +6,31 @@ const index = async (request, response) => {
     response.json(posts);
 };
 
-// Show - restituisce un singolo post
-const show = (request, response) => {
-    response.json({ message: 'Dettaglio del post' });
+// Show - restituisce un singolo post con i tag
+const show = async (request, response, next) => {
+    try {
+        const id = request.params.id;
+
+        const [posts] = await connection.query('SELECT * FROM posts WHERE id = ?', [id]);
+
+        if (posts.length === 0) {
+            return response.status(404).json({ message: `Post con id ${id} non trovato` });
+        }
+
+        const post = posts[0];
+
+        const [tags] = await connection.query(`
+      SELECT tags.* FROM tags
+      JOIN post_tag ON tags.id = post_tag.tag_id
+      WHERE post_tag.post_id = ?
+    `, [id]);
+
+        post.tags = tags;
+
+        response.json(post);
+    } catch (error) {
+        next(error);
+    }
 };
 
 // Store - crea un nuovo post
