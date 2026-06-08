@@ -1,6 +1,7 @@
 import express from 'express';
+import './config/db.js';
 import postsRouter from './routers/posts.js';
-import './config/db.js'
+
 const app = express();
 const port = 3000;
 
