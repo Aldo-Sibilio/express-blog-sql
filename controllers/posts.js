@@ -22,8 +22,10 @@ const update = (request, response) => {
 };
 
 // Destroy - cancella un post
-const destroy = (request, response) => {
-    response.json({ message: 'Cancellazione del post' });
+const destroy = async (request, response) => {
+    const id = request.params.id;
+    await connection.query('DELETE FROM posts WHERE id = ?', [id]);
+    response.sendStatus(204);
 };
 
 export { index, show, create, update, destroy };
